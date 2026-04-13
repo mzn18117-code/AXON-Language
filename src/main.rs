@@ -5,7 +5,7 @@ enum Token {
     Source,
     Manifest,
     Reveal(String),
-    Define(String, f64), // لتعريف متغير مثل العملة
+    Define(String, f64),
     Unknown(String),
 }
 
@@ -20,16 +20,17 @@ impl AxonEngine {
         let mut i = 0;
 
         while i < words.len() {
+            // إضافة دعم الكلمات العربية والإنجليزية معاً
             match words[i] {
-                "Source" => tokens.push(Token::Source),
-                "Manifest" => tokens.push(Token::Manifest),
-                "Define" if i + 2 < words.len() => {
+                "Source" | "مصدر" => tokens.push(Token::Source),
+                "Manifest" | "تجلي" => tokens.push(Token::Manifest),
+                "Define" | "تعريف" if i + 2 < words.len() => {
                     let name = words[i + 1].to_string();
                     let val: f64 = words[i + 2].parse().unwrap_or(0.0);
                     tokens.push(Token::Define(name, val));
                     i += 2;
                 }
-                "Reveal" if i + 1 < words.len() => {
+                "Reveal" | "إظهار" if i + 1 < words.len() => {
                     let mut msg = words[i+1].to_string();
                     if msg.starts_with('"') { msg = msg.trim_matches('"').to_string(); }
                     tokens.push(Token::Reveal(msg));
@@ -39,7 +40,6 @@ impl AxonEngine {
             }
             i += 1;
         }
-
         AxonEngine { tokens }
     }
 
@@ -48,42 +48,41 @@ impl AxonEngine {
         let has_source = self.tokens.contains(&Token::Source);
         let has_manifest = self.tokens.contains(&Token::Manifest);
 
-        println!("--- AXON Phase 3: Financial Logic ---");
+        println!("--- AXON Phase 4: Sovereign Arabic Logic ---");
         if has_source && has_manifest {
-            println!("⚖️ Equilibrium: Established.");
+            println!("⚖️ الميزان: مستقر ومنضبط");
             for token in &self.tokens {
                 match token {
                     Token::Define(name, val) => {
                         memory.insert(name.clone(), *val);
-                        println!("💰 Asset Defined: {} = {}", name, val);
+                        println!("💰 تم تعريف الأصل: {} بقيمة {}", name, val);
                     }
                     Token::Reveal(msg) => {
-                        // محاولة البحث في الذاكرة أولاً
                         if let Some(val) = memory.get(msg) {
-                            println!("📢 {} Balance: {}", msg, val);
+                            println!("📢 رصيد {}: {}", msg, val);
                         } else {
-                            println!("📢 Notification: {}", msg);
+                            println!("📢 تنبيه: {}", msg);
                         }
                     }
                     _ => {}
                 }
             }
         } else {
-            println!("❌ Error: Unbalanced Logic detected.");
+            println!("❌ خطأ: المنطق غير متزن. يجب أن يبدأ بـ 'مصدر' وينتهي بـ 'تجلي'.");
         }
     }
 }
 
 fn main() {
-    // كود AXON يحاكي تعريف عملات
+    // الآن نكتب الكود بالعربية تماماً!
     let code = r#"
-        Source
-            Define YER 5000
-            Define SAR 100
-            Reveal YER
-            Reveal SAR
-            Reveal "Sovereign_System_Active"
-        Manifest
+        مصدر
+            تعريف الريال_اليمني 750000
+            تعريف الريال_السعودي 2500
+            إظهار الريال_اليمني
+            إظهار الريال_السعودي
+            إظهار "تم_تفعيل_السيادة_الرقمية"
+        تجلي
     "#;
 
     let engine = AxonEngine::new(code);
